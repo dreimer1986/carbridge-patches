@@ -3,8 +3,15 @@ morphe-patcher = "2.3.0"
 #noinspection GradleDependency
 smali = "4220ae75f7"
 gson = "2.15.0"
+androidx-annotation = "1.10.0"
+androidx-car-app = "1.7.0"
+shizuku = "13.1.5"
 
 [libraries]
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidx-car-app" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 # Gradle plugins adds the dependency during build, this declaration is here only for dependabot to provide updates.
 #noinspection UnusedVersionCatalogEntry
