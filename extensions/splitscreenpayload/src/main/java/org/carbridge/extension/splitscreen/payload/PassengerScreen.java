@@ -30,16 +30,11 @@ final class PassengerScreen extends Screen {
             .setFlags(Action.FLAG_PRIMARY)
             .setOnClickListener(this::open)
             .build();
-        Action exit = new Action.Builder()
-            .setTitle("Exit")
-            .setOnClickListener(context::finishCarApp)
-            .build();
         return new MessageTemplate.Builder(
                 "This shows the full " + name + " app on the car screen. It's for passengers, "
                     + "or for when you're parked. Don't use it while you drive.")
             .setTitle("For passengers only")
             .setHeaderAction(Action.APP_ICON)
-            .addAction(exit)
             .addAction(passenger)
             .build();
     }

@@ -83,8 +83,10 @@ What you need:
 How it works:
 
 - Opening the app on the car first shows **For passengers only**. Tap **I'm a passenger** to
-  open the app, or **Exit**. Android Auto treats the app as a navigation app, so it doesn't block
-  it while driving the way it blocks full-screen apps; don't use it while you drive.
+  open the app. Android Auto treats the app as a navigation app, so it doesn't block it while
+  driving the way it blocks full-screen apps; don't use it while you drive.
+- To leave, open another app from Android Auto's app bar. There's no Exit button: Android Auto
+  keeps a navigation app in the main pane and reopens this one when it closes.
 - Taps, scrolls and flings on the car screen go to the app. Pinch zoom doesn't yet.
 - **Back** at the top right goes back inside the app. On the app's main screen it shows the
   app's name instead and does nothing, unless the app handles Back in its own code (YouTube
