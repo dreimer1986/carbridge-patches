@@ -18,6 +18,7 @@ final class ActivityTracker implements Application.ActivityLifecycleCallbacks {
     private boolean registered;
     @Nullable private Activity top;
     private final Set<Activity> onDisplay = new HashSet<>();
+    private final Set<Activity> resumed = new HashSet<>();
 
     ActivityTracker(@NonNull Application app) {
         this.app = app;
@@ -34,12 +35,24 @@ final class ActivityTracker implements Application.ActivityLifecycleCallbacks {
         registered = false;
         top = null;
         onDisplay.clear();
+        resumed.clear();
     }
 
     /** True while any activity lives on the display, including one being recreated. */
     boolean hasActivities() {
         onDisplay.removeIf(a -> a.isFinishing() || !onDisplay(a));
         return !onDisplay.isEmpty();
+    }
+
+    /** Any activity on the display, e.g. one whose task Back moved behind. */
+    @Nullable
+    Activity any() {
+        return hasActivities() ? onDisplay.iterator().next() : null;
+    }
+
+    boolean hasResumed() {
+        resumed.removeIf(a -> a.isFinishing() || !onDisplay(a));
+        return !resumed.isEmpty();
     }
 
     @Nullable
@@ -57,12 +70,15 @@ final class ActivityTracker implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
-        if (onDisplay(activity)) top = activity;
+        if (!onDisplay(activity)) return;
+        top = activity;
+        resumed.add(activity);
     }
 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
         onDisplay.remove(activity);
+        resumed.remove(activity);
         if (activity == top) top = null;
     }
 
@@ -72,7 +88,11 @@ final class ActivityTracker implements Application.ActivityLifecycleCallbacks {
     }
 
     @Override public void onActivityStarted(@NonNull Activity activity) {}
-    @Override public void onActivityPaused(@NonNull Activity activity) {}
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+        resumed.remove(activity);
+    }
+
     @Override public void onActivityStopped(@NonNull Activity activity) {}
     @Override public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle state) {}
 }

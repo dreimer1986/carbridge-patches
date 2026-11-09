@@ -3,6 +3,7 @@ package org.carbridge.extension.splitscreen.payload;
 import static org.carbridge.extension.splitscreen.payload.AppScreen.TAG;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.Application;
 import android.content.ComponentName;
@@ -12,17 +13,23 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Surface;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.car.app.CarContext;
 import androidx.car.app.CarToast;
 import androidx.car.app.SurfaceContainer;
+
+import java.util.Objects;
 
 /**
  * Runs the app's launcher activity on a virtual display sized to the visible part of the car's
@@ -32,6 +39,8 @@ final class AppDisplay {
     private static final long LAUNCH_CHECK_MS = 3000;
     private static final long AREA_SETTLE_MS = 300;
     private static final long RELEASE_DELAY_MS = 5000;
+    private static final long BACK_CHECK_MS = 1000;
+    private static final long BACK_RETURN_MS = 500;
     // Written by the patch's "Use the full pane height" option
     // The service the patch declares; it reads the option from its meta-data
     private static final String SERVICE = "org.carbridge.extension.splitscreen.SplitScreenCarAppService";
@@ -42,6 +51,11 @@ final class AppDisplay {
 
     private CarContext context;
     private Runnable onSurfaceStuck;
+    private Runnable onBackChanged;
+    private boolean canGoBack = true;
+    private boolean backChecked;
+    @Nullable private String backReason;
+    private final Runnable checkBack = this::checkBack;
     private final Runnable releaseNow = this::release;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ActivityTracker tracker;
@@ -61,9 +75,11 @@ final class AppDisplay {
     private int stableTop;
     private boolean launching;
 
-    private AppDisplay(@NonNull CarContext context, @NonNull Runnable onSurfaceStuck) {
+    private AppDisplay(@NonNull CarContext context, @NonNull Runnable onSurfaceStuck,
+                       @NonNull Runnable onBackChanged) {
         this.context = context;
         this.onSurfaceStuck = onSurfaceStuck;
+        this.onBackChanged = onBackChanged;
         compositor = new Compositor(() -> this.onSurfaceStuck.run());
         tracker = new ActivityTracker((Application) context.getApplicationContext());
         touch = new TouchForwarder(tracker::top);
@@ -73,13 +89,15 @@ final class AppDisplay {
 
     /** Adopts the display a just-closed car session left behind, or creates one. */
     @NonNull
-    static AppDisplay obtain(@NonNull CarContext context, @NonNull Runnable onSurfaceStuck) {
+    static AppDisplay obtain(@NonNull CarContext context, @NonNull Runnable onSurfaceStuck,
+                             @NonNull Runnable onBackChanged) {
         AppDisplay display = retained;
         retained = null;
-        if (display == null) return new AppDisplay(context, onSurfaceStuck);
+        if (display == null) return new AppDisplay(context, onSurfaceStuck, onBackChanged);
         display.handler.removeCallbacks(display.releaseNow);
         display.context = context;
         display.onSurfaceStuck = onSurfaceStuck;
+        display.onBackChanged = onBackChanged;
         Log.i(TAG, "Reusing the virtual display from the previous car session");
         return display;
     }
@@ -118,11 +136,34 @@ final class AppDisplay {
         compositor.setOutput(surface);
         updateDisplay();
         if (!tracker.hasActivities()) launch();
+        handler.removeCallbacks(checkBack);
+        handler.post(checkBack);
     }
 
     void detach() {
         // Keep the display so the activity survives the surface being recreated
         compositor.setOutput(null);
+        handler.removeCallbacks(checkBack);
+    }
+
+    /** False on the app's root screen, where Back would close the app and leave the pane empty. */
+    boolean canGoBack() {
+        return canGoBack;
+    }
+
+    private void checkBack() {
+        // Apps change screens without telling anyone; polling is cheap and catches every change
+        handler.postDelayed(checkBack, BACK_CHECK_MS);
+        Activity top = tracker.top();
+        if (top == null) return;
+        String reason = BackStack.whyBackStays(top);
+        if (Objects.equals(reason, backReason) && backChecked) return;
+        backReason = reason;
+        backChecked = true;
+        Log.d(TAG, reason != null ? "Showing Back: " + reason : "Hiding Back on the app's root screen");
+        if ((reason != null) == canGoBack) return;
+        canGoBack = reason != null;
+        onBackChanged.run();
     }
 
     void release() {
@@ -201,11 +242,48 @@ final class AppDisplay {
         touch.fling(velocityX, velocityY, displayWidth / 2f, displayHeight / 2f);
     }
 
-    @SuppressWarnings("deprecation") // onBackPressed still routes through OnBackPressedDispatcher
     void back() {
         Activity top = tracker.top();
-        if (top != null) top.onBackPressed();
+        if (top != null) pressBack(top);
         else if (!tracker.hasActivities()) launch();
+        handler.postDelayed(this::returnAfterBack, BACK_RETURN_MS);
+        // Show the change right away instead of on the next poll
+        handler.removeCallbacks(checkBack);
+        handler.postDelayed(checkBack, AREA_SETTLE_MS);
+    }
+
+    /**
+     * A real key event, not onBackPressed(): only the input pipeline reaches the platform's back
+     * callbacks, e.g. a toolbar closing its search box.
+     */
+    private static void pressBack(Activity activity) {
+        long now = SystemClock.uptimeMillis();
+        Window window = activity.getWindow();
+        window.injectInputEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK, 0));
+        window.injectInputEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK, 0));
+    }
+
+    /** Back on a screen wrongly read as a sub-screen may close the app; bring it right back. */
+    private void returnAfterBack() {
+        if (tracker.hasResumed()) return;
+        Activity behind = tracker.any();
+        if (behind == null) {
+            launch();
+            return;
+        }
+        int taskId = behind.getTaskId();
+        for (ActivityManager.AppTask task : context.getSystemService(ActivityManager.class).getAppTasks()) {
+            if (taskId(task.getTaskInfo()) == taskId) {
+                Log.i(TAG, "Back closed the app's root screen; bringing it back");
+                task.moveToFront();
+                return;
+            }
+        }
+    }
+
+    @SuppressWarnings("deprecation") // TaskInfo.taskId needs API 29
+    private static int taskId(ActivityManager.RecentTaskInfo info) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? info.taskId : info.id;
     }
 
     private boolean fitsSurface(Rect rect) {

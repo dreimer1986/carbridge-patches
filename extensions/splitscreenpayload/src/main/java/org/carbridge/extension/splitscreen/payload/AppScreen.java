@@ -24,7 +24,7 @@ final class AppScreen extends Screen implements SurfaceCallback {
 
     AppScreen(@NonNull CarContext carContext) {
         super(carContext);
-        display = AppDisplay.obtain(carContext, this::closeForNewSurface);
+        display = AppDisplay.obtain(carContext, this::closeForNewSurface, this::invalidate);
         carContext.getCarService(AppManager.class).setSurfaceCallback(this);
         getLifecycle().addObserver((LifecycleEventObserver) (owner, event) -> {
             if (event == Lifecycle.Event.ON_DESTROY) display.releaseLater();
@@ -40,14 +40,25 @@ final class AppScreen extends Screen implements SurfaceCallback {
     @NonNull
     @Override
     public Template onGetTemplate() {
-        Action back = new Action.Builder()
-            .setTitle("Back")
-            .setOnClickListener(display::back)
-            .build();
         return new NavigationTemplate.Builder()
-            .setActionStrip(new ActionStrip.Builder().addAction(back).build())
+            .setActionStrip(new ActionStrip.Builder().addAction(stripAction()).build())
             // Android Auto only sends scroll and fling events in pan mode
             .setMapActionStrip(new ActionStrip.Builder().addAction(Action.PAN).build())
+            .build();
+    }
+
+    private Action stripAction() {
+        if (display.canGoBack()) {
+            return new Action.Builder()
+                .setTitle("Back")
+                .setOnClickListener(display::back)
+                .build();
+        }
+        // The strip needs an action, and Android Auto tints icons into blank tiles: use the name
+        CarContext context = getCarContext();
+        return new Action.Builder()
+            .setTitle(context.getApplicationInfo().loadLabel(context.getPackageManager()))
+            .setOnClickListener(() -> {})
             .build();
     }
 
