@@ -14,6 +14,8 @@ private const val SERVICE = "$EXTENSION.SplitScreenCarAppService"
 private const val DESCRIPTOR_NAME = "carbridge_split_screen_app_desc"
 private const val NAVIGATION_CATEGORY = "androidx.car.app.category.NAVIGATION"
 private const val SHIZUKU_PROVIDER = "rikka.shizuku.ShizukuProvider"
+// Added by Show in Android Auto to launcher activities
+private const val CAR_LAUNCHER_CATEGORY = "android.intent.category.CAR_LAUNCHER"
 // Read by the payload's AppDisplay
 private const val FULL_HEIGHT_META = "$EXTENSION.FULL_HEIGHT"
 // The car code and its own Car App Library, loaded apart from the app's classes; see the
@@ -98,6 +100,12 @@ val showInAndroidAutoSplitScreenPatch = patch(
         document("AndroidManifest.xml").use { doc ->
             val packageName = doc.documentElement.getAttribute("package")
             val app = DomHost(doc).application
+            if (hasShowInAndroidAuto(app)) {
+                throw PatchException(
+                    "Show in Android Auto and Show in Android Auto split screen can't be combined. " +
+                        "Turn one of them off.",
+                )
+            }
             app.children("provider").firstOrNull { it.getString(CarPatch.NAME) == SHIZUKU_PROVIDER }
                 ?.setString(AUTHORITIES, "$packageName.shizuku")
         }
@@ -165,6 +173,17 @@ private fun addShizukuProvider(app: ManifestElement, packageName: String) {
     provider.setBoolean(EXPORTED, true)
     provider.setString(PERMISSION, "android.permission.INTERACT_ACROSS_USERS_FULL")
 }
+
+/**
+ * Show in Android Auto adds the car launcher category to the app's launcher activities; apps don't
+ * declare it themselves. Checked in finalize, since either patch may run first.
+ */
+private fun hasShowInAndroidAuto(app: ManifestElement) =
+    CarPatch.launcherActivities(app).any { activity ->
+        activity.children("intent-filter").any { filter ->
+            filter.children("category").any { it.getString(CarPatch.NAME) == CAR_LAUNCHER_CATEGORY }
+        }
+    }
 
 private fun findMeta(parent: ManifestElement, name: String) =
     parent.children("meta-data").firstOrNull { it.getString(CarPatch.NAME) == name }
