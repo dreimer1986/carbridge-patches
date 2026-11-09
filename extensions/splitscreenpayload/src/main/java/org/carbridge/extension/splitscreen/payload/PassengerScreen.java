@@ -1,6 +1,7 @@
 package org.carbridge.extension.splitscreen.payload;
 
 import androidx.annotation.NonNull;
+import androidx.car.app.AppManager;
 import androidx.car.app.CarContext;
 import androidx.car.app.Screen;
 import androidx.car.app.ScreenManager;
@@ -15,6 +16,8 @@ import androidx.car.app.model.Template;
 final class PassengerScreen extends Screen {
     PassengerScreen(@NonNull CarContext carContext) {
         super(carContext);
+        // After process death the host keeps calling the dead process's callback, then shows an ANR
+        carContext.getCarService(AppManager.class).setSurfaceCallback(null);
     }
 
     @NonNull
