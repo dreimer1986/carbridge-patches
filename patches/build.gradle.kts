@@ -41,3 +41,23 @@ tasks {
         dependsOn("generatePatchesList")
     }
 }
+
+// The split-screen payload's Car App Library reads its API level from a class-path resource,
+// which its dex can't carry; the patch ships it beside the payload
+val carAppLibrary = configurations.create("carAppLibrary") { isTransitive = false }
+
+dependencies {
+    carAppLibrary(variantOf(libs.androidx.car.app) { artifactType("aar") })
+}
+
+val carAppApiLevel = tasks.register<Copy>("carAppApiLevel") {
+    val aar = carAppLibrary.elements.map { files -> files.map { zipTree(it).matching { include("classes.jar") } } }
+    from(aar.map { trees -> trees.flatMap { it.files }.map { zipTree(it) } }) {
+        include("car-app-api.level")
+    }
+    into(layout.buildDirectory.dir("generated/carAppApiLevel/extensions"))
+}
+
+sourceSets.main {
+    resources.srcDir(carAppApiLevel.map { it.destinationDir.parentFile })
+}

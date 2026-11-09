@@ -51,7 +51,7 @@ val showInAndroidAutoPatch = patch(
 }
 
 /** Morphe's decoded manifest, where attributes are written as `android:<name>` text. */
-private class DomHost(private val doc: Document) : ManifestHost {
+internal class DomHost(private val doc: Document) : ManifestHost {
     override val manifest = DomElement(doc.documentElement)
     override val application = manifest.children("application").firstOrNull()
         ?: throw PatchException("Manifest has no <application>")
@@ -76,7 +76,7 @@ private class DomHost(private val doc: Document) : ManifestHost {
     override fun log(message: String) = Unit
 }
 
-private class DomElement(val el: Element) : ManifestElement {
+internal class DomElement(val el: Element) : ManifestElement {
     override val tag: String get() = el.tagName
 
     override fun children(tag: String): List<ManifestElement> {
