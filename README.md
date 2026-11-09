@@ -68,6 +68,38 @@ re-sign the app.
 Combine it with the app's usual Morphe patches. The patch is as is: there's no list of supported
 apps, and requests to make a particular app work aren't accepted.
 
+## Split screen (experimental)
+
+**Show in Android Auto split screen** shows the app in Android Auto's main pane, next to the
+media and notification cards, instead of full screen. Use it instead of **Show in Android
+Auto**, not with it; Morphe stops with an error if both are on.
+
+What you need:
+
+- [Shizuku](https://shizuku.rikka.app/) installed and running on the phone. The patched app asks
+  for Shizuku permission the first time it opens on the car; allow it on the phone.
+- The same Android Auto **Unknown sources** setting as above.
+
+How it works:
+
+- Opening the app on the car first shows **For passengers only**. Tap **I'm a passenger** to
+  open the app, or **Exit**. Android Auto treats the app as a navigation app, so it doesn't block
+  it while driving the way it blocks full-screen apps; don't use it while you drive.
+- Taps, scrolls and flings on the car screen go to the app. Pinch zoom doesn't yet.
+- **Back** at the top right goes back inside the app. On the app's main screen it shows the
+  app's name instead and does nothing, unless the app handles Back in its own code (YouTube
+  does). If Back closes the app anyway, the patch reopens it.
+- The app runs on its own display, so it can be open on the phone and the car at the same time.
+
+| Option | Default | What it does |
+|---|---|---|
+| Use the full pane height | Off | Uses the space under Android Auto's button strip too. The app gets more room, but the button covers its top-right corner while it's visible. |
+
+Known issues:
+
+- If the app is reinstalled or force-stopped while it's on the car screen, Android Auto may say
+  the app isn't responding. Tap **Exit** and open it again.
+
 ## Patches list
 
 <!-- PATCHES_START EXPANDED -->
