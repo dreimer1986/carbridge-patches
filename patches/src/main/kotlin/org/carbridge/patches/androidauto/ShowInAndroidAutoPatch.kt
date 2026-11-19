@@ -65,10 +65,14 @@ internal class DomHost(private val doc: Document) : ManifestHost {
         doc.documentElement.insertBefore(el, (application as DomElement).el)
     }
 
-    override fun addAutomotiveDescriptor(name: String, uses: String) {
+    override fun addAutomotiveDescriptor(name: String, vararg uses: String) {
         resourceFile("res/xml/$name.xml", false).apply {
             parentFile.mkdirs()
-            writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<automotiveApp>\n    <uses name=\"$uses\"/>\n</automotiveApp>\n")
+            writeText(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<automotiveApp>\n" +
+                    uses.joinToString("") { "    <uses name=\"$it\"/>\n" } +
+                    "</automotiveApp>\n",
+            )
         }
     }
 
