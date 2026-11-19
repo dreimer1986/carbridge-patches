@@ -99,7 +99,7 @@ How it works:
 
 | Option | Default | What it does |
 |---|---|---|
-| Use the full pane height | Off | Uses the space under Android Auto's button strip too. The app gets more room, but the button covers its top-right corner while it's visible. |
+| Let the app go under the Back button | Off | Uses the space under the **Back** button too. The app gets more room, but the button covers its top-right corner while it's visible. |
 
 Known issues:
 

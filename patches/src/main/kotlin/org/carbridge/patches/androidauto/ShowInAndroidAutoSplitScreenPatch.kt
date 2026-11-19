@@ -29,7 +29,7 @@ val showInAndroidAutoSplitScreenPatch = patch(
     val fullHeightOption = booleanOption(
         key = "fullHeight",
         default = false,
-        title = "Use the full pane height",
+        title = "Let the app go under the Back button",
         description = "Show the app under Android Auto's Back button instead of below it. The app " +
             "gets more room, but the button covers its top-right corner while it's visible.",
     )
