@@ -77,7 +77,8 @@ Auto**, not with it; Morphe stops with an error if both are on.
 What you need:
 
 - [Shizuku](https://shizuku.rikka.app/) installed and running on the phone. The patched app asks
-  for Shizuku permission the first time it opens on the car; allow it on the phone.
+  for Shizuku permission the first time it opens on the car; allow it on the phone. If Shizuku
+  isn't running yet, the car says so, and the app opens by itself once you start it.
 - The same Android Auto **Unknown sources** setting as above.
 
 How it works:
@@ -101,6 +102,7 @@ Known issues:
 
 - If the app is reinstalled or force-stopped while it's on the car screen, Android Auto may say
   the app isn't responding. Tap **Exit** and open it again.
+- Unity games stay white in the pane. Use **Show in Android Auto** for them.
 
 ## Patches list
 
