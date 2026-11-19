@@ -88,7 +88,10 @@ How it works:
   driving the way it blocks full-screen apps; don't use it while you drive.
 - To leave, open another app from Android Auto's app bar. There's no Exit button: Android Auto
   keeps a navigation app in the main pane and reopens this one when it closes.
-- Taps, scrolls and flings on the car screen go to the app. Pinch zoom doesn't yet.
+- Taps, scrolls and flings on the car screen go to the app, including its dialogs, menus and
+  Android permission prompts. Pinch zoom doesn't yet, and two quick taps on the same spot can
+  arrive as a pinch, so tap a little slower.
+- The keyboard opens on the phone, not on the car.
 - **Back** at the top right goes back inside the app. On the app's main screen it shows the
   app's name instead and does nothing, unless the app handles Back in its own code (YouTube
   does). If Back closes the app anyway, the patch reopens it.
