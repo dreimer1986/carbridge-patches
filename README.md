@@ -12,7 +12,7 @@ the other patches you apply (for example, branding and icon changes keep working
 Both put an app's full interface on the Android Auto screen, using the same rules (CarBridge's
 `core` module). They differ in what they do to the app:
 
-| | [CarBridge app](https://github.com/jmwerk/CarBridge) | [CarBridge Patches](https://github.com/jmwerk/carbridge-patches) for Morphe |
+| | [CarBridge app](https://github.com/jmwerk/CarBridge) | [CarBridge Patches](https://github.com/dreimer1986/carbridge-patches) for Morphe |
 |---|---|---|
 | What you get | A separate copy, "*App* (Car)", next to the original | The patched app; no extra car copy |
 | Original app | Untouched; keeps updating from its store | Replaced, unless Morphe gives the app its own package name (as it does for YouTube) |
@@ -33,12 +33,14 @@ points Morphe-patched apps here automatically.
 Neither works with apps that check Play Integrity, their own signature or a license; both
 re-sign the app.
 
+The fork builds the test patch on the [integration branch](https://github.com/dreimer1986/carbridge-patches/tree/optional-manifest-metadata). Its [downloads](https://github.com/dreimer1986/carbridge-patches/releases/tag/v1.2.1) are served by this source.
+
 ## How to use these patches
 
 1. In Morphe Manager, add this patch source: tap the button below, or open **Sources** in the
-   bottom bar, tap **+** and add `https://github.com/jmwerk/carbridge-patches`.
+   bottom bar, tap **+** and add `https://github.com/dreimer1986/carbridge-patches`.
 
-   <a href="https://morphe.software/add-source?github=jmwerk/carbridge-patches">
+   <a href="https://morphe.software/add-source?github=dreimer1986/carbridge-patches">
      <img src=".github/assets/add-to-morphe.svg" alt="Add to Morphe Manager" height="48">
    </a>
 
@@ -48,7 +50,7 @@ re-sign the app.
    - Apps in Morphe's list, like YouTube: tap the app on the **Apps** screen and pick a version.
    - Any other app: tap **Select other apps** at the top of the **Apps** screen, then pick an
      APK from storage or an installed app.
-4. On the patch list, open the **CarBridge Patches** tab and turn on **Show in Android Auto**.
+4. On the patch list, open the **CarBridge Patches** tab and turn on **Show in Android Auto (CarBridge Test)**.
    Its settings icon has the [options](#recommended-options). Keep the app's usual patches on
    in their own tab.
 5. Tap **Patch**. Morphe warns about mixing patch sources; you can continue.
@@ -71,7 +73,7 @@ apps, and requests to make a particular app work aren't accepted.
 ## Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.2.0](https://github.com/jmwerk/carbridge-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;1 patches total
+> **[v1.2.0](https://github.com/dreimer1986/carbridge-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;1 patches total
 <details open>
 <summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
