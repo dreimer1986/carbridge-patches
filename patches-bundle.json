@@ -1,8 +1,6 @@
 {
-  "created_at": "2026-11-07T18:04:02",
-  "description": "## [1.2.0](https://github.com/jmwerk/carbridge-patches/compare/v1.1.0...v1.2.0) (2026-11-07)\n\n### ✨ New Features\n\n* use CarBridge's shared Android Auto rules ([7d5ed04](https://github.com/jmwerk/carbridge-patches/commit/7d5ed045aa9693148267e6e62157b89df71070ed))",
-  "download_url": "https://github.com/jmwerk/carbridge-patches/releases/download/v1.2.0/patches-1.2.0.mpp",
-  "signature_download_url": "",
-  "version": "1.2.0",
-  "public_key": "lldTi7/VXVZ1mI+n6K1Uvak39yENFOFdZX/mUDVeLpA="
+  "version": "1.2.1",
+  "download_url": "https://github.com/dreimer1986/carbridge-patches/releases/download/v1.2.1/CarBridge-test-1.2.1.mpp",
+  "created_at": "2026-11-27T14:25:00Z",
+  "description": "Show in Android Auto (CarBridge Test) includes the Set distractionOptimized metadata option."
 }
