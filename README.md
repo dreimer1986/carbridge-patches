@@ -2,7 +2,7 @@
 
 Patches that put an app's full interface on the Android Auto car screen while parked.
 A patch bundle for use with [Morphe](https://github.com/MorpheApp) Manager, made by the
-[CarBridge](https://github.com/jmwerk/CarBridge) project. Not affiliated with or endorsed by Morphe.
+[CarBridge](https://github.com/dreimer1986/CarBridge) project. Not affiliated with or endorsed by Morphe.
 
 Unlike the CarBridge app, these patches keep the app's package name, so they work together with
 the other patches you apply (for example, branding and icon changes keep working).
@@ -12,7 +12,7 @@ the other patches you apply (for example, branding and icon changes keep working
 Both put an app's full interface on the Android Auto screen, using the same rules (CarBridge's
 `core` module). They differ in what they do to the app:
 
-| | [CarBridge app](https://github.com/jmwerk/CarBridge) | [CarBridge Patches](https://github.com/dreimer1986/carbridge-patches) for Morphe |
+| | [CarBridge app](https://github.com/dreimer1986/CarBridge) | [CarBridge Patches](https://github.com/dreimer1986/carbridge-patches) for Morphe |
 |---|---|---|
 | What you get | A separate copy, "*App* (Car)", next to the original | The patched app; no extra car copy |
 | Original app | Untouched; keeps updating from its store | Replaced, unless Morphe gives the app its own package name (as it does for YouTube) |
@@ -120,7 +120,7 @@ they are free and open source for every app, with no tiers or sign-in.
 ## Support
 
 These patches are free and will stay that way. If they're useful to you, you can
-[buy me a coffee](https://buymeacoffee.com/jmwerk). It's entirely optional and doesn't unlock anything.
+[buy me a coffee](https://buymeacoffee.com/dreimer1986). It's entirely optional and doesn't unlock anything.
 
 ## License
 
