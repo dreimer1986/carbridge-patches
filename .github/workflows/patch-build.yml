@@ -1,0 +1,26 @@
+name: Build patch bundle
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+  packages: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Build bundle
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.MORPHE_PACKAGES_TOKEN || github.token }}
+        run: ./gradlew buildAndroid
+      - uses: actions/upload-artifact@v4
+        with:
+          name: carbridge-patches
+          path: patches/build/libs/*.mpp
+          if-no-files-found: error

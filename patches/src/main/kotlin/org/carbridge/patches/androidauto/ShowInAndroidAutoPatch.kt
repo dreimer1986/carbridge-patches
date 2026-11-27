@@ -35,9 +35,17 @@ val showInAndroidAutoPatch = patch(
         description = "Remove portrait-only locks, so screens that only work upright fill the wide car display.",
     )
 
+    val markOptimized = booleanOption(
+        key = "markOptimized",
+        default = true,
+        title = "Set distractionOptimized metadata",
+        description = "Turn off to preserve the original manifest declarations.",
+    )
+
     execute {
         document("AndroidManifest.xml").use { doc ->
             val options = CarOptions(
+                markOptimized = markOptimized.value != false,
                 keepMediaServices = keepMediaServicesOption.value == true,
                 fillScreen = fillScreenOption.value != false,
             )
