@@ -15,7 +15,7 @@ import org.w3c.dom.Element
 
 @Suppress("unused")
 val showInAndroidAutoPatch = patch(
-    name = "Show in Android Auto",
+    name = "Show in Android Auto (CarBridge Test)",
     description = "Lists the app in the Android Auto launcher and shows its full interface " +
         "on the car screen while parked.",
     default = false,
