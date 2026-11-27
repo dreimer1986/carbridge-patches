@@ -3,6 +3,7 @@ rootProject.name = "carbridge-patches"
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         google()
         maven {
             name = "GitHubPackages"
